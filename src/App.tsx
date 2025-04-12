@@ -2,6 +2,10 @@ import { useEffect, useState } from "react"
 import { FlightDiary, FlightDiaryProps } from "./types"
 import { getAllEntries, createEntry } from "./services/flightDiaryService"
 
+interface FormProps {
+  setFlightDiaries: React.Dispatch<React.SetStateAction<FlightDiary[]>>;
+}
+
 const Title = () => {
   return <h1>Ilari's flight diaries</h1>
 }
@@ -39,7 +43,7 @@ const Flights = ({ flightDiaries }: FlightDiaryProps) => {
 //   setNewNote('')
 // };
 
-const Form = ({ flightDiaries }) => {
+const Form = ({ setFlightDiaries }: FormProps) => {
 
   const [date, setDate] = useState<string>('')
   const [weather, setWeather] = useState<string>('')
@@ -72,16 +76,15 @@ const Form = ({ flightDiaries }) => {
     console.log('newFlightEntry', newFlightEntry)
 
     createEntry(newFlightEntry)
-      .then(data => {
-        console.log('App.data', data)
-        flightDiaries.concat(newFlightEntry)
+      .then((data: FlightDiary) => {
+        setFlightDiaries((prev: FlightDiary[]) => [...prev, data]);
         setDate("")
         setWeather("")
         setVisibility("")
         setComment("")
       })
       .catch(error => {
-        setErrorMessage(error.message); // or show in UI
+        setErrorMessage(error.message);
       });
   }
 
@@ -115,8 +118,113 @@ const Form = ({ flightDiaries }) => {
       </div>
       <form onSubmit={handleSubmit}>
         <div> date: <input type="date" name="date" value={date} onChange={handleChange} /></div>
-        <div>weather: <input type="text" name="weather" value={weather} onChange={handleChange} /></div>
-        <div>  visibility: <input type="text" name="visibility" value={visibility} onChange={handleChange} /></div>
+
+        <div>
+          visibility:
+          <label>
+            <input
+              type="radio"
+              name="visibility"
+              value="great"
+              checked={visibility === 'great'}
+              onChange={handleChange}
+            />
+            great
+          </label>
+
+          <label>
+            <input
+              type="radio"
+              name="visibility"
+              value="good"
+              checked={visibility === 'good'}
+              onChange={handleChange}
+            />
+            good
+          </label>
+
+          <label>
+            <input
+              type="radio"
+              name="visibility"
+              value="ok"
+              checked={visibility === 'ok'}
+              onChange={handleChange}
+            />
+            ok
+          </label>
+
+          <label>
+            <input
+              type="radio"
+              name="visibility"
+              value="poor"
+              checked={visibility === 'poor'}
+              onChange={handleChange}
+            />
+            poor
+          </label>
+        </div>
+
+        <div>
+          weather:
+          <label>
+            <input
+              type="radio"
+              name="weather"
+              value="sunny"
+              checked={weather === 'sunny'}
+              onChange={handleChange}
+            />
+            sunny
+          </label>
+
+          <label>
+            <input
+              type="radio"
+              name="weather"
+              value="rainy"
+              checked={weather === 'rainy'}
+              onChange={handleChange}
+            />
+            rainy
+          </label>
+
+          <label>
+            <input
+              type="radio"
+              name="weather"
+              value="cloudy"
+              checked={weather === 'cloudy'}
+              onChange={handleChange}
+            />
+            cloudy
+          </label>
+
+          <label>
+            <input
+              type="radio"
+              name="weather"
+              value="stormy"
+              checked={weather === 'stormy'}
+              onChange={handleChange}
+            />
+            stormy
+          </label>
+
+          <label>
+            <input
+              type="radio"
+              name="weather"
+              value="windy"
+              checked={weather === 'windy'}
+              onChange={handleChange}
+            />
+            windy
+          </label>
+        </div>
+
+
         <div> comment: <input type="text" name="comment" value={comment} onChange={handleChange} /></div>
         <button type="submit">submit</button>
       </form>
@@ -124,10 +232,10 @@ const Form = ({ flightDiaries }) => {
   )
 }
 
+
 const App = () => {
 
   const [flightDiaries, setFlightDiaries] = useState<FlightDiary[]>([])
-
 
   useEffect(() => {
     getAllEntries().then(data => {
@@ -140,10 +248,11 @@ const App = () => {
   return (
     <>
       <Title />
-      <Form flightDiaries={flightDiaries} />
+      <Form setFlightDiaries={setFlightDiaries} />
       <Flights flightDiaries={flightDiaries} />
     </>
   )
 }
+
 
 export default App

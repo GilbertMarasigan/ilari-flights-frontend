@@ -9,8 +9,7 @@ export const getAllEntries = () => {
         .then(response => response.data)
 }
 
-export const createEntry = async (object: NewFlightDiaryEntry) => {
-
+export const createEntry = async (object: NewFlightDiaryEntry): Promise<FlightDiary> => {
     try {
         const response = await axios
             .post<FlightDiary>(baseUrl, object)
