@@ -29,10 +29,80 @@ const Flights = ({ flightDiaries }: FlightDiaryProps) => {
   );
 };
 
+
+// const noteCreation = (event: React.SyntheticEvent) => {
+//   event.preventDefault()
+//   createNote({ content: newNote }).then(data => {
+//     setNotes(notes.concat(data))
+//   })
+
+//   setNewNote('')
+// };
+
+const Form = () => {
+
+  const [date, setDate] = useState<string>('')
+  const [weather, setWeather] = useState<string>('')
+  const [visibility, setVisibility] = useState<string>('')
+  const [comment, setComment] = useState<string>('')
+
+  const handleSubmit = (event: React.SyntheticEvent) => {
+    event.preventDefault()
+    const newFlightEntry = {
+      date: date,
+      weather: weather,
+      visibility: visibility,
+      comment: comment
+    }
+
+    console.log('newFlightEntry', newFlightEntry)
+
+    createEntry(newFlightEntry)
+      .then(data => {
+        console.log('data', data)
+      })
+  }
+
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+
+    switch (name) {
+      case 'date':
+        setDate(value);
+        break;
+      case 'weather':
+        setWeather(value);
+        break;
+      case 'visibility':
+        setVisibility(value);
+        break;
+      case 'comment':
+        setComment(value);
+        break;
+      default:
+        break;
+    }
+  };
+
+
+  return (
+    <div>
+      <form onSubmit={handleSubmit}>
+        <div> date: <input type="date" name="date" value={date} onChange={handleChange} /></div>
+        <div>weather: <input type="text" name="weather" value={weather} onChange={handleChange} /></div>
+        <div>  visibility: <input type="text" name="visibility" value={visibility} onChange={handleChange} /></div>
+        <div> comment: <input type="text" name="comment" value={comment} onChange={handleChange} /></div>
+        <button type="submit">submit</button>
+      </form>
+    </div>
+  )
+}
+
 const App = () => {
 
   const [flightDiaries, setFlightDiaries] = useState<FlightDiary[]>([])
-  const [newEntry, setNewEntry] = useState('');
+
 
   useEffect(() => {
     getAllEntries().then(data => {
@@ -45,6 +115,7 @@ const App = () => {
   return (
     <>
       <Title />
+      <Form />
       <Flights flightDiaries={flightDiaries} />
     </>
   )
