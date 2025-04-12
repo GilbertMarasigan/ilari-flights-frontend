@@ -39,12 +39,26 @@ const Flights = ({ flightDiaries }: FlightDiaryProps) => {
 //   setNewNote('')
 // };
 
-const Form = () => {
+const Form = ({ flightDiaries }) => {
 
   const [date, setDate] = useState<string>('')
   const [weather, setWeather] = useState<string>('')
   const [visibility, setVisibility] = useState<string>('')
   const [comment, setComment] = useState<string>('')
+
+  const [errorMessage, setErrorMessage] = useState<string>('')
+
+  // Show error and hide after 5 seconds
+  useEffect(() => {
+    if (errorMessage !== '') {
+      const timer = setTimeout(() => {
+        setErrorMessage('');
+      }, 5000);
+
+      return () => clearTimeout(timer); // cleanup if component unmounts
+    }
+  }, [errorMessage]);
+
 
   const handleSubmit = (event: React.SyntheticEvent) => {
     event.preventDefault()
@@ -59,8 +73,16 @@ const Form = () => {
 
     createEntry(newFlightEntry)
       .then(data => {
-        console.log('data', data)
+        console.log('App.data', data)
+        flightDiaries.concat(newFlightEntry)
+        setDate("")
+        setWeather("")
+        setVisibility("")
+        setComment("")
       })
+      .catch(error => {
+        setErrorMessage(error.message); // or show in UI
+      });
   }
 
 
@@ -88,6 +110,9 @@ const Form = () => {
 
   return (
     <div>
+      <div style={{ color: 'red' }}>
+        {(errorMessage !== '') && (<div>{errorMessage}</div>)}
+      </div>
       <form onSubmit={handleSubmit}>
         <div> date: <input type="date" name="date" value={date} onChange={handleChange} /></div>
         <div>weather: <input type="text" name="weather" value={weather} onChange={handleChange} /></div>
@@ -115,7 +140,7 @@ const App = () => {
   return (
     <>
       <Title />
-      <Form />
+      <Form flightDiaries={flightDiaries} />
       <Flights flightDiaries={flightDiaries} />
     </>
   )
